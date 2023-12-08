@@ -1,8 +1,9 @@
 advent_of_code::solution!(7);
-use std::{marker::PhantomData, str::FromStr, num::ParseIntError};
+use std::{marker::PhantomData, num::ParseIntError, str::FromStr};
 
 pub fn part_one(input: &str) -> Option<u32> {
-    let hands = input.lines()
+    let hands = input
+        .lines()
         .map(Hand::from_str)
         .collect::<Result<Vec<Hand<Part1Parser>>, _>>()
         .expect("Invalid input");
@@ -17,15 +18,15 @@ impl Parser for Part1Parser {
         let v = c as u8;
         match v {
             0x32..=0x39 => v - 0x32,
-            0x54 => 8, // T
-            0x4A => 9, // J
+            0x54 => 8,   // T
+            0x4A => 9,   // J
             0x51 => 0xA, // Q
             0x4B => 0xB, // K
             0x41 => 0xC, // A
-            _ => unreachable!()
+            _ => unreachable!(),
         }
     }
-    
+
     fn counter_to_value(counter: [u8; 13]) -> u8 {
         let mut pairs: u8 = 0;
         let mut tree: u8 = 0;
@@ -43,18 +44,19 @@ impl Parser for Part1Parser {
             (_, 1) => 3, // Tree of kind
             (2, _) => 2, // Two pairs
             (1, _) => 1, // pair
-            _ => 0 // high card
+            _ => 0,      // high card
         }
     }
 }
 
 pub fn part_two(input: &str) -> Option<u32> {
-    let hands = input.lines()
-    .map(Hand::from_str)
-    .collect::<Result<Vec<Hand<Part2Parser>>, _>>()
-    .expect("Invalid input");
+    let hands = input
+        .lines()
+        .map(Hand::from_str)
+        .collect::<Result<Vec<Hand<Part2Parser>>, _>>()
+        .expect("Invalid input");
 
-Some(total_winnings(hands))
+    Some(total_winnings(hands))
 }
 
 struct Part2Parser;
@@ -65,11 +67,11 @@ impl Parser for Part2Parser {
         match v {
             0x4A => 0, // J
             0x32..=0x39 => v - 0x31,
-            0x54 => 9, // T
+            0x54 => 9,   // T
             0x51 => 0xA, // Q
             0x4B => 0xB, // K
             0x41 => 0xC, // A
-            _ => unreachable!()
+            _ => unreachable!(),
         }
     }
 
@@ -77,16 +79,16 @@ impl Parser for Part2Parser {
         let jokers = counter[0];
         let mut counter: Vec<u8> = counter[1..].to_vec();
         counter.sort_unstable();
-        
+
         let counter = (counter[11], counter[10]);
         match counter {
-                (x, _) if x + jokers == 5 => 6,
-                (x, _) if x + jokers == 4 => 5,
-                (x, 2) if x + jokers == 3 => 4,
-                (x, _) if x + jokers == 3 => 3,
-                (2, 2) => 2,
-                (x, _) if x + jokers == 2 => 1,
-                _ => 0,
+            (x, _) if x + jokers == 5 => 6,
+            (x, _) if x + jokers == 4 => 5,
+            (x, 2) if x + jokers == 3 => 4,
+            (x, _) if x + jokers == 3 => 3,
+            (2, 2) => 2,
+            (x, _) if x + jokers == 2 => 1,
+            _ => 0,
         }
     }
 }
@@ -100,9 +102,11 @@ pub struct Hand<U> {
 
 pub fn total_winnings<U>(mut hands: Vec<Hand<U>>) -> u32 {
     hands.sort_unstable_by_key(Hand::value);
-    hands.iter().enumerate().map(|(rank, hand)| {
-        hand.bid() * (rank as u32 + 1)
-    }).sum()
+    hands
+        .iter()
+        .enumerate()
+        .map(|(rank, hand)| hand.bid() * (rank as u32 + 1))
+        .sum()
 }
 
 impl<U> Hand<U> {
@@ -115,26 +119,31 @@ impl<U> Hand<U> {
     }
 }
 
-impl<U> FromStr for Hand<U> 
+impl<U> FromStr for Hand<U>
 where
-    U: Parser
+    U: Parser,
 {
     type Err = ParseIntError;
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
-        let (counter, value) = s[..5].chars()
-            .map(U::char_to_value)
-            .fold(([0u8; 0xD], 0), |(mut counter, mut value), v| {
+        let (counter, value) = s[..5].chars().map(U::char_to_value).fold(
+            ([0u8; 0xD], 0),
+            |(mut counter, mut value), v| {
                 counter[v as usize] += 1;
                 value <<= 4;
                 value ^= v as u32;
                 (counter, value)
-        });
+            },
+        );
 
         let value = value ^ ((U::counter_to_value(counter) as u32) << 20);
-        let bid =s[6..].parse::<u32>()?;
-        
-        Ok(Self { value, bid, marker: PhantomData })
+        let bid = s[6..].parse::<u32>()?;
+
+        Ok(Self {
+            value,
+            bid,
+            marker: PhantomData,
+        })
     }
 }
 

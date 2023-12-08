@@ -1,7 +1,6 @@
-use std::collections::{HashSet, HashMap};
+use std::collections::{HashMap, HashSet};
 
 advent_of_code::solution!(3);
-
 
 pub fn part_one(input: &str) -> Option<u32> {
     Some(sum_of_part_numbers(input))
@@ -13,7 +12,7 @@ fn sum_of_part_numbers(s: &str) -> u32 {
 
     let mut symbol_indexs: Vec<(usize, usize)> = Vec::new();
     let mut part_numbers: HashSet<usize> = HashSet::new();
-    let mut reading_number= false;
+    let mut reading_number = false;
 
     for (row_index, l) in s.lines().enumerate() {
         for (col_index, c) in l.chars().enumerate() {
@@ -23,15 +22,17 @@ fn sum_of_part_numbers(s: &str) -> u32 {
                         let n = numbers.last_mut().unwrap();
                         *n *= 10;
                         *n += digit_to_u16(c);
-                    },
+                    }
                     false => {
                         reading_number = true;
                         numbers.push(digit_to_u16(c));
-                    },
+                    }
                 };
-                numbers_map.entry(row_index).or_default()
-                    .entry(col_index).or_insert(numbers.len() - 1);
-
+                numbers_map
+                    .entry(row_index)
+                    .or_default()
+                    .entry(col_index)
+                    .or_insert(numbers.len() - 1);
             } else {
                 reading_number = false;
                 if c != '.' {
@@ -69,7 +70,7 @@ fn sum_of_gear_ratios(s: &str) -> u32 {
     let mut numbers: Vec<u16> = Vec::new();
 
     let mut gears_index: Vec<(usize, usize)> = Vec::new();
-    let mut reading_number= false;
+    let mut reading_number = false;
 
     for (row_index, l) in s.lines().enumerate() {
         for (col_index, c) in l.chars().enumerate() {
@@ -79,15 +80,17 @@ fn sum_of_gear_ratios(s: &str) -> u32 {
                         let n = numbers.last_mut().unwrap();
                         *n *= 10;
                         *n += digit_to_u16(c);
-                    },
+                    }
                     false => {
                         reading_number = true;
                         numbers.push(digit_to_u16(c));
-                    },
+                    }
                 };
-                numbers_map.entry(row_index).or_default()
-                    .entry(col_index).or_insert(numbers.len() - 1);
-
+                numbers_map
+                    .entry(row_index)
+                    .or_default()
+                    .entry(col_index)
+                    .or_insert(numbers.len() - 1);
             } else {
                 reading_number = false;
                 if c == '*' {
@@ -101,20 +104,25 @@ fn sum_of_gear_ratios(s: &str) -> u32 {
     let mut sum = 0u32;
     for (row_index, col_index) in gears_index {
         let adjacents = adjacents(row_index, col_index);
-        
-        let adjacent_numbers = adjacents.iter()
-            .fold(HashSet::new(), |mut acc: HashSet<usize>, (row_index, col_index)| {
+
+        let adjacent_numbers = adjacents.iter().fold(
+            HashSet::new(),
+            |mut acc: HashSet<usize>, (row_index, col_index)| {
                 if let Some(row) = numbers_map.get(row_index) {
                     if let Some(n_index) = row.get(col_index) {
                         acc.insert(*n_index);
                     }
                 }
-                
+
                 acc
-            });
-        
+            },
+        );
+
         if adjacent_numbers.len() == 2 {
-            let gear_ratio = adjacent_numbers.iter().map(|&i| numbers[i] as u32).product::<u32>();
+            let gear_ratio = adjacent_numbers
+                .iter()
+                .map(|&i| numbers[i] as u32)
+                .product::<u32>();
             sum += gear_ratio;
         }
     }
@@ -126,15 +134,17 @@ fn digit_to_u16(d: char) -> u16 {
     (d as u8 - 48) as u16
 }
 
-fn adjacents(x: usize, y: usize) -> [(usize, usize); 8]{
-    [(x - 1, y - 1),
-    (x - 1, y),
-    (x - 1, y + 1),
-    (x, y - 1),
-    (x, y + 1),
-    (x + 1, y - 1),
-    (x + 1, y),
-    (x + 1, y + 1)]
+fn adjacents(x: usize, y: usize) -> [(usize, usize); 8] {
+    [
+        (x - 1, y - 1),
+        (x - 1, y),
+        (x - 1, y + 1),
+        (x, y - 1),
+        (x, y + 1),
+        (x + 1, y - 1),
+        (x + 1, y),
+        (x + 1, y + 1),
+    ]
 }
 
 #[cfg(test)]
