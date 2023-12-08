@@ -59,6 +59,7 @@ fn parse_part_two(input: &str) -> (u64, u64) {
 }
 
 pub fn solve_eq(b: u64, c: u64) -> (u64, u64) {
+    #[allow(non_snake_case)]
     let Δ: f64 = ((b.pow(2) - 4 * c) as f64).sqrt();
 
     let x_1 = ((b as f64 - Δ)/2.0).trunc() as u64 + 1;
