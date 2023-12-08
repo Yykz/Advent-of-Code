@@ -1,80 +1,90 @@
-use std::collections::HashMap;
-
 advent_of_code::solution!(8);
 
+fn map_byte(c: u8) -> u16 {
+    (c - b'A') as u16
+}
+
+fn to_value(s: &str) -> u16 {
+    let s = s.as_bytes();
+    map_byte(s[0])* 676 + map_byte(s[1]) * 26 + map_byte(s[2])
+}
+
 pub fn part_one(input: &str) -> Option<usize> {
-    let mut ite = input.lines();
-    let directions: Vec<usize> = ite
-        .next()
-        .unwrap()
-        .chars()
-        .map(|c| match c {
-            'L' => 0,
-            'R' => 1,
+    let (directions, nodes) = parse_part_one(input);
+
+    let mut current_node = 0;
+    let end = to_value("ZZZ");
+    for (i, dir) in directions.chars().cycle().enumerate() {
+        if current_node == end {
+            return Some(i);
+        }
+        current_node = match dir {
+            'L' => nodes[current_node as usize].0,
+            'R' => nodes[current_node as usize].1,
             _ => unreachable!(),
-        })
-        .collect();
+        };
+    }
 
-    let mut nodes: HashMap<&str, [&str; 2]> = HashMap::new();
+    unreachable!()
+}
+
+fn parse_part_one(input: &str) -> (&str, [(u16, u16); 17_576]) {
+    let mut ite = input.lines();
+    let directions = ite.next().unwrap();
+
+    let mut nodes = [(0u16, 0u16); 17_576];
     for line in ite.skip(1) {
-        let name = &line[..3];
-        let left = &line[7..10];
-        let right = &line[12..15];
+        let name = to_value(&line[..3]);
+        let left = to_value(&line[7..10]);
+        let right = to_value(&line[12..15]);
 
-        nodes.insert(name, [left, right]);
+        nodes[name as usize] = (left, right);
     }
-
-    let mut current_node = "AAA";
-    let mut steps = 0;
-    while current_node != "ZZZ" {
-        let dir = directions[steps % directions.len()];
-        current_node = nodes.get(current_node).unwrap()[dir];
-        steps += 1;
-    }
-
-    Some(steps)
+    (directions, nodes)
 }
 
 pub fn part_two(input: &str) -> Option<u64> {
-    let mut ite = input.lines();
-    let directions: Vec<usize> = ite
-        .next()
-        .unwrap()
-        .chars()
-        .map(|c| match c {
-            'L' => 0,
-            'R' => 1,
-            _ => unreachable!(),
-        })
-        .collect();
-
-    let mut nodes: HashMap<&str, [&str; 2]> = HashMap::new();
-    let mut start_nodes: Vec<&str> = Vec::new();
-    for line in ite.skip(1) {
-        let name = &line[..3];
-        let left = &line[7..10];
-        let right = &line[12..15];
-
-        if name.ends_with('A') {
-            start_nodes.push(name);
-        }
-        nodes.insert(name, [left, right]);
-    }
+    let (directions, nodes, start_nodes) = parse_part_two(input);
 
     let mut steps = Vec::new();
     for node in start_nodes {
         let mut current_node = node;
-        let mut current_steps = 0;
-        while !current_node.ends_with('Z') {
-            let dir = directions[current_steps % directions.len()];
-            current_node = nodes.get(current_node).unwrap()[dir];
-            current_steps += 1;
+        for (i, dir) in directions.chars().cycle().enumerate() {
+            if current_node % 26 == 25 {
+                steps.push(i as u64);
+                break;
+            }
+            current_node = match dir {
+                'L' => nodes[current_node as usize].0,
+                'R' => nodes[current_node as usize].1,
+                _ => unreachable!(),
+            };
         }
-        steps.push(current_steps as u64);
     }
 
     let lcm = steps.iter().fold(1, |acc, &n| lcm(acc, n));
     Some(lcm)
+}
+
+fn parse_part_two(input: &str) -> (&str, [(u16, u16); 17_576], Vec::<u16>) {
+    let mut ite = input.lines();
+    let directions = ite.next().unwrap();
+
+    let mut nodes = [(0u16, 0u16); 17_576];
+    let mut start_nodes = Vec::new();
+    for line in ite.skip(1) {
+        let name = to_value(&line[..3]);
+        let left = to_value(&line[7..10]);
+        let right = to_value(&line[12..15]);
+
+        if name % 26 == 0 {
+            start_nodes.push(name);
+        }
+
+        nodes[name as usize] = (left, right);
+    }
+
+    (directions, nodes, start_nodes)
 }
 
 fn lcm(a: u64, b: u64) -> u64 {
