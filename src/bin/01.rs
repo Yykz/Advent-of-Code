@@ -6,12 +6,21 @@ pub fn part_one(input: &str) -> Option<u16> {
 }
 
 fn calibration_value_part_one(line: &str) -> u16 {
-    let mut digits = line.chars().filter(char::is_ascii_digit);
+    let digits = line.as_bytes();
+
     let first = digits
-        .next()
+        .iter()
+        .filter(|&d| d.is_ascii_digit())
         .map(Digit::from)
-        .expect("Expect to have at least 1 digit in line");
-    let last = digits.last().map(Digit::from).unwrap_or(first);
+        .next()
+        .expect("Invalid input");
+    let last = digits
+        .iter()
+        .rev()
+        .filter(|&d| d.is_ascii_digit())
+        .map(Digit::from)
+        .next()
+        .expect("Invalid input");
 
     first.make_number(last)
 }
@@ -65,9 +74,9 @@ impl FromStr for Digit {
     }
 }
 
-impl From<char> for Digit {
-    fn from(value: char) -> Self {
-        Self(value as u8 - 48)
+impl From<&u8> for Digit {
+    fn from(value: &u8) -> Self {
+        Self(value - 48)
     }
 }
 
