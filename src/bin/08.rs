@@ -6,7 +6,7 @@ fn map_byte(c: u8) -> u16 {
 
 fn to_value(s: &str) -> u16 {
     let s = s.as_bytes();
-    map_byte(s[0])* 676 + map_byte(s[1]) * 26 + map_byte(s[2])
+    map_byte(s[0]) * 676 + map_byte(s[1]) * 26 + map_byte(s[2])
 }
 
 pub fn part_one(input: &str) -> Option<usize> {
@@ -66,7 +66,7 @@ pub fn part_two(input: &str) -> Option<u64> {
     Some(lcm)
 }
 
-fn parse_part_two(input: &str) -> (&str, [(u16, u16); 17_576], Vec::<u16>) {
+fn parse_part_two(input: &str) -> (&str, [(u16, u16); 17_576], Vec<u16>) {
     let mut ite = input.lines();
     let directions = ite.next().unwrap();
 
