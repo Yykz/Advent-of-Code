@@ -3,22 +3,22 @@ advent_of_code::solution!(11);
 fn adjusted_coords(
     x: usize,
     y: usize,
-    expand: (&[usize], &[usize]),
-    expand_speed: usize,
+    expansions: (&[usize], &[usize]),
+    expansion_speed: usize,
 ) -> (usize, usize) {
     (
-        x + (expand
+        x + (expansions
             .0
             .iter()
-            .take_while(|&&expand_x| x > expand_x)
+            .take_while(|&&expansion_x| x > expansion_x)
             .count()
-            * expand_speed),
-        y + (expand
+            * expansion_speed),
+        y + (expansions
             .1
             .iter()
-            .take_while(|&&expand_y| y > expand_y)
+            .take_while(|&&expansion_y| y > expansion_y)
             .count()
-            * expand_speed),
+            * expansion_speed),
     )
 }
 
@@ -26,8 +26,8 @@ fn path_len(from: &(usize, usize), to: &(usize, usize)) -> usize {
     from.0.abs_diff(to.0) + from.1.abs_diff(to.1)
 }
 
-fn parse_expands(galaxies: &[(usize, usize)]) -> (Vec<usize>, Vec<usize>) {
-    let expands = galaxies
+fn parse_expansion(galaxies: &[(usize, usize)]) -> (Vec<usize>, Vec<usize>) {
+    let expansions = galaxies
         .iter()
         .fold(([true; 140], [true; 140]), |mut acc, &(x, y)| {
             acc.0[x] = false;
@@ -35,8 +35,8 @@ fn parse_expands(galaxies: &[(usize, usize)]) -> (Vec<usize>, Vec<usize>) {
             acc
         });
 
-    let map_expand = |expand: [bool; 140]| {
-        expand
+    let map_expansion = |expansion: [bool; 140]| {
+        expansion
             .iter()
             .enumerate()
             .filter(|(_i, &e)| e)
@@ -44,17 +44,17 @@ fn parse_expands(galaxies: &[(usize, usize)]) -> (Vec<usize>, Vec<usize>) {
             .collect::<Vec<usize>>()
     };
 
-    (map_expand(expands.0), map_expand(expands.1))
+    (map_expansion(expansions.0), map_expansion(expansions.1))
 }
 
 fn adjust_galaxies_coords(
     galaxies: Vec<(usize, usize)>,
-    expand: (Vec<usize>, Vec<usize>),
-    expand_speed: usize,
+    expansions: (Vec<usize>, Vec<usize>),
+    expansion_speed: usize,
 ) -> Vec<(usize, usize)> {
     galaxies
         .iter()
-        .map(|&(x, y)| adjusted_coords(x, y, (&expand.0, &expand.1), expand_speed))
+        .map(|&(x, y)| adjusted_coords(x, y, (&expansions.0, &expansions.1), expansion_speed))
         .collect()
 }
 
@@ -82,10 +82,10 @@ fn parse_galaxies(input: &str) -> Vec<(usize, usize)> {
         .collect()
 }
 
-fn run(input: &str, expand_speed: usize) -> Option<usize> {
+fn sum_of_galaxies_pairs_paths_len(input: &str, expansion_speed: usize) -> Option<usize> {
     let galaxies = parse_galaxies(input);
-    let expand = parse_expands(&galaxies);
-    let galaxies = adjust_galaxies_coords(galaxies, expand, expand_speed);
+    let expansion = parse_expansion(&galaxies);
+    let galaxies = adjust_galaxies_coords(galaxies, expansion, expansion_speed - 1);
     let paths_len = paths_len(&galaxies);
     let sum = paths_len.sum();
 
@@ -93,11 +93,11 @@ fn run(input: &str, expand_speed: usize) -> Option<usize> {
 }
 
 pub fn part_one(input: &str) -> Option<usize> {
-    run(input, 1)
+    sum_of_galaxies_pairs_paths_len(input, 2)
 }
 
 pub fn part_two(input: &str) -> Option<usize> {
-    run(input, 999_999)
+    sum_of_galaxies_pairs_paths_len(input, 1_000_000)
 }
 
 #[cfg(test)]
@@ -114,9 +114,9 @@ mod tests {
     fn test_part_two() {
         let input = &advent_of_code::template::read_file("examples", DAY);
 
-        let result = run(input, 99);
+        let result = sum_of_galaxies_pairs_paths_len(input, 100);
         assert_eq!(result, Some(8410));
-        let result = run(input, 9);
+        let result = sum_of_galaxies_pairs_paths_len(input, 10);
         assert_eq!(result, Some(1030));
     }
 }
