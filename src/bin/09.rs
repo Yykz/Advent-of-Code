@@ -4,7 +4,9 @@ advent_of_code::solution!(9);
 
 pub fn part_one(input: &str) -> Option<i32> {
     let next_values = input.lines().map(|history| {
-        let numbers = history.split_whitespace().map(|n| n.parse::<i32>().unwrap());
+        let numbers = history
+            .split_whitespace()
+            .map(|n| n.parse::<i32>().unwrap());
         next_value(numbers)
     });
 
@@ -12,12 +14,13 @@ pub fn part_one(input: &str) -> Option<i32> {
 }
 
 fn next_value<T: Iterator<Item = i32>>(sequence: T) -> i32 {
-    let (vec, last) = sequence
-        .tuple_windows()
-        .fold((Vec::new(), 0), |(mut sub_seq, _last), (current, next)| {
-            sub_seq.push(next - current);
-            (sub_seq, next)
-        });
+    let (vec, last) =
+        sequence
+            .tuple_windows()
+            .fold((Vec::new(), 0), |(mut sub_seq, _last), (current, next)| {
+                sub_seq.push(next - current);
+                (sub_seq, next)
+            });
     if last == 0 {
         last
     } else {
@@ -27,7 +30,9 @@ fn next_value<T: Iterator<Item = i32>>(sequence: T) -> i32 {
 
 pub fn part_two(input: &str) -> Option<i32> {
     let last_value = input.lines().map(|history| {
-        let numbers = history.split_whitespace().map(|n| n.parse::<i32>().unwrap());
+        let numbers = history
+            .split_whitespace()
+            .map(|n| n.parse::<i32>().unwrap());
         last_value(numbers)
     });
 
@@ -35,13 +40,13 @@ pub fn part_two(input: &str) -> Option<i32> {
 }
 
 fn last_value<T: Iterator<Item = i32> + DoubleEndedIterator>(sequence: T) -> i32 {
-    let (vec, last) = sequence
-        .rev()
-        .tuple_windows()
-        .fold((Vec::new(), 0), |(mut sub_seq, _last), (current, next)| {
+    let (vec, last) = sequence.rev().tuple_windows().fold(
+        (Vec::new(), 0),
+        |(mut sub_seq, _last), (current, next)| {
             sub_seq.push(next - current);
             (sub_seq, next)
-        });
+        },
+    );
 
     if vec.iter().all(|&x| x == 0) {
         last
