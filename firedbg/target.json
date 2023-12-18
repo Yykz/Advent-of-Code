@@ -1,0 +1,55 @@
+{
+  "binaries": [
+    {
+      "name": "advent_of_code",
+      "src_path": "/home/yikz/vs-code/Advent-of-Code/src/main.rs"
+    },
+    {
+      "name": "01",
+      "src_path": "/home/yikz/vs-code/Advent-of-Code/src/bin/01.rs"
+    },
+    {
+      "name": "02",
+      "src_path": "/home/yikz/vs-code/Advent-of-Code/src/bin/02.rs"
+    },
+    {
+      "name": "03",
+      "src_path": "/home/yikz/vs-code/Advent-of-Code/src/bin/03.rs"
+    },
+    {
+      "name": "04",
+      "src_path": "/home/yikz/vs-code/Advent-of-Code/src/bin/04.rs"
+    },
+    {
+      "name": "06",
+      "src_path": "/home/yikz/vs-code/Advent-of-Code/src/bin/06.rs"
+    },
+    {
+      "name": "07",
+      "src_path": "/home/yikz/vs-code/Advent-of-Code/src/bin/07.rs"
+    },
+    {
+      "name": "08",
+      "src_path": "/home/yikz/vs-code/Advent-of-Code/src/bin/08.rs"
+    },
+    {
+      "name": "09",
+      "src_path": "/home/yikz/vs-code/Advent-of-Code/src/bin/09.rs"
+    },
+    {
+      "name": "10",
+      "src_path": "/home/yikz/vs-code/Advent-of-Code/src/bin/10.rs"
+    },
+    {
+      "name": "11",
+      "src_path": "/home/yikz/vs-code/Advent-of-Code/src/bin/11.rs"
+    },
+    {
+      "name": "13",
+      "src_path": "/home/yikz/vs-code/Advent-of-Code/src/bin/13.rs"
+    }
+  ],
+  "examples": [],
+  "integration_tests": [],
+  "unit_tests": []
+}
